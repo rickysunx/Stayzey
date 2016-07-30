@@ -1,0 +1,238 @@
+﻿@using System.Collections;
+@{
+    Layout = "../Common/Frame.cshtml";
+    decimal price = (decimal)ViewBag.Room["Price"];
+
+    int usertype = 2;
+    if (Session["login_user"] != null)
+    {
+        usertype = (int)(((Hashtable)Session["login_user"])["UserType"]);
+    }
+}
+
+
+<link href="~/css/thumbnail-slider.css" rel="stylesheet" type="text/css" />
+<link href="~/css/ninja-slider.css" rel="stylesheet" type="text/css" />
+<script src="~/js/thumbnail-slider.js" type="text/javascript"></script>
+<script src="~/js/ninja-slider.js" type="text/javascript"></script>
+
+
+<div class="room_detail container">
+    <div class="row room_header">
+        <div class="room_avatar col-xs-12 col-sm-2 ">
+            <div><img src="@ViewBag.Room["Avatar"]" /></div>
+            <div><b>@(ViewBag.Room["FirstName"]+" "+ViewBag.Room["Surname"]) </b></div>
+        </div>
+        <div class="room_title col-xs-12 col-sm-10">@ViewBag.Room["RoomTitle"]</div>
+        <div class="room_address col-xs-12 col-sm-10">@ViewBag.Room["Location"]</div>
+        <div class="room_price col-xs-12 col-sm-10">Price: $@ViewBag.Room["Price"] per week</div>
+    </div>
+
+    <div class="row room_images">
+        <div id='ninja-slider'>
+            <div>
+                <div class="slider-inner">
+                    <ul>
+                        @foreach (Hashtable RoomImage in ViewBag.RoomImages)
+                        {
+                            <li><a class="ns-img" href="@RoomImage["RoomImage"]"></a></li>
+                        }
+                    </ul>
+                    <div class="fs-icon" title="Expand/Close"></div>
+                </div>
+
+                <div id="thumbnail-slider">
+                    <div class="inner">
+                        <ul>
+                            @foreach (Hashtable RoomImage in ViewBag.RoomImages)
+                            {
+                                <li><a class="thumb" href="@RoomImage["RoomImage"]"></a></li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form id="frmBooking" method="post">
+        <input type="hidden" name="roomid" value="@Request["id"]"/>
+        <div class="room_booking_title">$@price NZD Per Week</div>
+        <div class="room_booking">
+            <div class="">
+                <div class="room_booking_dates">
+                    <div class="room_booking_dates_label"><span>Dates</span></div>
+                    <div class="room_booking_dates_input"><input id="listpage_dates" name="dates" readonly type="text" /></div>
+                </div>
+                <div class="room_booking_table">
+                    <table>
+                        <tr>
+                            <td class="room_booking_table_col1">Deposit</td>
+                            <td class="room_booking_table_col2">$@(price * 2)</td>
+                        </tr>
+
+                        <tr>
+                            <td class="room_booking_table_col1">Letting Fee</td>
+                            <td class="room_booking_table_col2">$@price</td>
+                        </tr>
+
+                        <tr>
+                            <td class="room_booking_table_col1">One Week Advanced</td>
+                            <td class="room_booking_table_col2">$@price</td>
+                        </tr>
+
+                        <tr>
+                            <td class="room_booking_table_col1 room_booking_table_last_line">Total Moving Cost</td>
+                            <td class="room_booking_table_col2 room_booking_table_last_line">$@(price * 4) NZD</td>
+                        </tr>
+
+                    </table>
+                </div>
+                <div class="room_booking_button">
+                    @if (usertype == 2)
+                    {
+                        <button onclick="requestToBook(); return false;">Request to Book</button>
+                    }
+                    else
+                    {
+                        <button onclick="return false;" title="You can not book as a landlord" style="background-color:#ddd;border-color:#ddd;">Request to Book</button>
+                    }
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div class="room_content">
+        <h2>About this room</h2>
+        <div>@Html.Raw(ViewBag.Room["RoomIntro"])</div>
+    </div>
+
+    <div class="room_content">
+        <h2>Amenities</h2>
+        <div class="room_amenity">
+            @foreach (string amenity in ViewBag.AmenityArray)
+            {
+                <div class="amenity_icon"><i class="amenity_icon_@amenity"></i><span>@amenity</span></div>
+            }
+        </div>
+    </div>
+
+    <div class="room_content">
+        <h2>Map</h2>
+        <div>
+            <iframe id="mapFrame" style="width:100%;border:1px solid #aaa;" frameborder="0"
+                    src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBzQpLJb5mfDZwGjmez9TfHQUrTXhBiOUg&q=@Url.Encode(ViewBag.Room["Location"])" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <div class="room_content">
+        <h2>Reviews</h2>
+        <div class="ReviewContainer">
+            @foreach (Hashtable reviewItem in ViewBag.RoomReviews)
+            {
+                <div class="ReviewItem">
+                    <div class="ReviewTitle">
+                        <div class="ReviewName">@reviewItem["FirstName"]</div>
+                        <div class="ReviewRating">
+                            <div class="review_star_block @((int)(reviewItem["ReviewMark"])>=1?"star_rating_block_selected":"")"></div>
+                            <div class="review_star_block @((int)(reviewItem["ReviewMark"])>=2?"star_rating_block_selected":"")"></div>
+                            <div class="review_star_block @((int)(reviewItem["ReviewMark"])>=3?"star_rating_block_selected":"")"></div>
+                            <div class="review_star_block @((int)(reviewItem["ReviewMark"])>=4?"star_rating_block_selected":"")"></div>
+                            <div class="review_star_block @((int)(reviewItem["ReviewMark"])>=5?"star_rating_block_selected":"")"></div>
+                        </div>
+                        <div class="ReviewTime">@reviewItem["ReviewTime"]</div>
+                    </div>
+                    <div class="ReviewContent">
+                        @reviewItem["ReviewContent"]
+                    </div>
+                </div>
+            }
+            
+        </div>
+    </div>
+
+
+
+</div>
+
+<script type="text/javascript">
+    function resizeMap() {
+        $("#mapFrame").height($("#mapFrame").width() * 0.7);
+    }
+    $(window).resize(resizeMap);
+    resizeMap();
+
+    @Html.Raw(ViewBag.BookingArrayScript)
+
+    $(document).ready(function () {
+        $("#listpage_dates").daterangepicker({
+            isInvalidDate: function (date) {
+                var date0 = new Date(date.year(), date.month(), date.date(), 0, 0, 0, 0);
+                for (var i = 0; i < RoomBookings.length; i++) {
+                    if (date0 >= RoomBookings[i].startDate && date0 < RoomBookings[i].endDate) {
+                        return true;
+                    }
+                }
+                return false;
+            },
+            isInvalidRange: function (start, end) {
+                start.hour(0);
+                start.minute(0);
+                start.second(0);
+                start.millisecond(0);
+                end.hour(0);
+                end.minute(0);
+                end.second(0);
+                end.millisecond(0);
+                if ((end - start) < 86400000 * 7) {
+                    return true;
+                }
+
+                var startDate = new Date(start.year(), start.month(), start.date(), 0, 0, 0, 0);
+                var endDate = new Date(end.year(), end.month(), end.date(), 0, 0, 0, 0);
+
+                for (var i = 0; i < RoomBookings.length; i++) {
+                    var bookingStart = RoomBookings[i].startDate;
+                    var bookingEnd = RoomBookings[i].endDate;
+                    if(!( endDate <= bookingStart || startDate >= bookingEnd )) {
+                        return true;
+                    }
+                }
+
+                return false;
+            },
+            autoApply: true,
+            linkedCalendars: true,
+            minDate: new Date(),
+            locale: { format: "DD/MM/YYYY" }
+        });
+    });
+
+    function requestToBook() {
+        submitForm("/User/RequestToBook", "frmBooking", function (result) {
+            if(result.success==1)
+            {
+                alert("You have successfully booked this room!");
+                window.location.href = '/User/Bookings';
+            }
+            else
+            {
+                if (result.error_code == 1) {
+                    onLogIn();
+                } else {
+                    alert(result.error_info);
+                }
+                
+            }
+        });
+    }
+
+    
+
+</script>
+
+<div style="height:50px;">
+
+</div>
+
+

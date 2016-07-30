@@ -1,0 +1,30 @@
+﻿@{
+    Layout = "Frame.cshtml";
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".userNavWishLists").addClass("active");
+    });
+</script>
+
+<div class="booking_list">
+    @for (int i = 0; i < 5; i++)
+    {
+        <div class="booking_item">
+            <div class="booking_item_image">
+                <img src="~/images/test/62f06765_original.jpg" />
+            </div>
+            <div class="booking_item_content">
+                <div class="booking_item_title">Comfortable Single Room</div>
+                <div class="booking_item_address">450 Queen Street, Auckland, New Zealand</div>
+                <div class="booking_item_price">Price: $200</div>
+                <div class="booking_item_time"><b>Move In:</b> 20 June 2016  <b>Move Out:</b> 21 Aug 2016</div>
+                <div class="booking_item_actions">
+                    <a href="#">View</a>&nbsp;&nbsp;
+                    <a href="#">Delete</a>&nbsp;&nbsp;
+                </div>
+            </div>
+        </div>
+    }
+</div>

@@ -1,0 +1,145 @@
+﻿@{
+    Layout = "Frame.cshtml";
+
+    string Gender = "";
+    if (ViewBag.User["Gender"] is string)
+    {
+        Gender = ViewBag.User["Gender"];
+    }
+    int dob_day = 0;
+    int dob_month = 0;
+    int dob_year = 0;
+
+    if(ViewBag.User["DateOfBirth"] is DateTime)
+    {
+        DateTime dob = ViewBag.User["DateOfBirth"];
+
+        dob_day = dob.Day;
+        dob_month = dob.Month;
+        dob_year = dob.Year;
+    }
+
+}
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".userNavProfile").addClass("active");
+    });
+</script>
+
+<form id="ProfileForm" method="post" action="/User/SaveProfile">
+    <div class="ProfileContainer">
+        <div class="ProfileTitle">Edit Profile</div>
+        <div class="ProfileContent">
+            <div class="ProfileRow">
+                <div class="ProfileLabel">
+                    <span>First Name</span>
+                </div>
+                <div class="ProfileInput">
+                    <input name="FirstName" class="form-control" type="text" value="@ViewBag.User["FirstName"]" />
+                </div>
+            </div>
+
+            <div class="ProfileRow">
+                <div class="ProfileLabel">
+                    <span>Last Name</span>
+                </div>
+                <div class="ProfileInput">
+                    <input name="Lastname" class="form-control" value="@ViewBag.User["Surname"]" />
+                </div>
+            </div>
+
+            <div class="ProfileRow">
+                <div class="ProfileLabel">
+                    <span>Gender</span>
+                </div>
+                <div class="ProfileInput">
+                    <select name="Gender" style="width:130px;" class="form-control">
+                        <option value="">Not Selected</option>
+                        <option value="Male" @(Gender == "Male" ? " selected" : "")>Male</option>
+                        <option value="Female" @(Gender == "Female" ? " selected" : "")>Female</option>
+                        <option value="Other" @(Gender == "Other" ? " selected" : "")>Other</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="ProfileRow">
+                <div class="ProfileLabel">
+                    <span>Birth Date</span>
+                </div>
+                <div class="ProfileInput" style="">
+                    <select name="BirthDay" style="width:80px;" class="form-control ProfileControls">
+                        <option value="0">-N/A-</option>
+                        @for (int i = 1; i <= 31; i++)
+                        {
+                            <option value="@i" @(i==dob_day?" selected":"")>@i</option>
+                        }
+                    </select>
+
+                    <select name="BirthMonth" style="width:120px;" class="form-control ProfileControls">
+                        <option value="0">-N/A-</option>
+                        <option value="1" @(dob_month==1?" selected":"")>January</option>
+                        <option value="2" @(dob_month==2?" selected":"")>February</option>
+                        <option value="3" @(dob_month==3?" selected":"")>March</option>
+                        <option value="4" @(dob_month==4?" selected":"")>April</option>
+                        <option value="5" @(dob_month==5?" selected":"")>May</option>
+                        <option value="6" @(dob_month==6?" selected":"")>June</option>
+                        <option value="7" @(dob_month==7?" selected":"")>July</option>
+                        <option value="8" @(dob_month==8?" selected":"")>August</option>
+                        <option value="9" @(dob_month==9?" selected":"")>September</option>
+                        <option value="10" @(dob_month==10?" selected":"")>October</option>
+                        <option value="11" @(dob_month==11?" selected":"")>November</option>
+                        <option value="12" @(dob_month==12?" selected":"")>December</option>
+                    </select>
+
+                    <select name="BirthYear" style="width:80px;" class="form-control ProfileControls">
+                        <option value="0">-N/A-</option>
+                        @for (int i = 1900; i <= 2016; i++)
+                        {
+                            <option value="@i" @(i==dob_year?" selected":"")>@i</option>;
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <div class="ProfileRow">
+                <div class="ProfileLabel">
+                    <span>Email Address</span>
+                </div>
+                <div class="ProfileInput">
+                    <input name="Email" type="text" class="form-control" value="@ViewBag.User["Email"]" />
+                </div>
+            </div>
+
+            <div class="ProfileRow">
+                <div class="ProfileLabel">
+                    <span>Phone Number</span>
+                </div>
+                <div class="ProfileInput">
+                    <input type="text" name="Phone" class="form-control ProfileControls" value="@ViewBag.User["Phone"]"/>
+                </div>
+            </div>
+
+            <div class="ProfileRow">
+                <div class="ProfileLabel">
+                    <span>Profile Image</span>
+                </div>
+                <div class="ProfileInput">
+                    <div id="profile_image"><img id="profile_image_img" class="avatar_img" src="@ViewBag.User["Avatar"]" /></div>
+                    <div><iframe style="width:350px;height:30px;" scrolling="no" frameborder="0" src="/User/UploadImage?callback=onProfileImageUploaded"></iframe></div>
+                    <input id="profile_image_input" name="ProfileImage" type="hidden" value="@ViewBag.User["Avatar"]"/>
+                </div>
+            </div>
+
+            <div class="ProfileRow">
+                <div class="ProfileLabel">
+
+                </div>
+                <div class="ProfileInput">
+                    <button class="btn btn-primary" onclick="onSubmitProfile(); return false;">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

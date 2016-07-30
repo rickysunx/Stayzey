@@ -1,0 +1,140 @@
+﻿@{
+    Layout = "Frame.cshtml";
+}
+@using System.Collections;
+@{ 
+    Hashtable Room = ViewBag.Room;
+
+    HashSet<String> AmenitySet = new HashSet<String>();
+
+    if(Room!=null)
+    {
+        string amenities = (string)Room["Amenities"];
+        string[] amenityArray = amenities.Split(",".ToCharArray());
+        foreach(string am in amenityArray)
+        {
+            AmenitySet.Add(am);
+        }
+    }
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".userNavListings").addClass("active");
+    });
+
+
+    var newRoomAutoComplete;
+    function fillInAddress() {
+        var place = newRoomAutoComplete.getPlace();
+        var geometry = place.geometry;
+        var location = geometry.location;
+        $("#AddressLatitude").val(location.lat());
+        $("#AddressLongitude").val(location.lng());
+    }
+
+    function initMap2() {
+        newRoomAutoComplete = new google.maps.places.Autocomplete(
+            document.getElementById('NewRoomAddress'), { types: ['geocode'] });
+        newRoomAutoComplete.addListener("place_changed", fillInAddress);
+    };
+
+</script>
+
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBzQpLJb5mfDZwGjmez9TfHQUrTXhBiOUg&libraries=places&callback=initMap2&t=1000" async defer></script>
+
+<form id="NewRoomForm">
+    <input type="hidden" name="RoomId" value="@(Room==null?"0":Room["RoomId"])"/>
+    <div class="ProfileContainer">
+        <div class="ProfileTitle">List a new room</div>
+        <div class="ProfileContent">
+            <div class="NewRoomRow">
+                <div class="ProfileLabel">
+                    <span>Title</span>
+                </div>
+                <div class="ProfileInput">
+                    <input id="NewRoomTitle" name="Title" type="text" class="form-control" @Html.Raw(Room==null?"":" value=\""+Room["RoomTitle"]+"\"") />
+                </div>
+            </div>
+
+            <div class="NewRoomRow">
+                <div class="ProfileLabel">
+                    <span>Address</span>
+                </div>
+                <div class="ProfileInput">
+                    <input id="NewRoomAddress" name="Address" type="text" class="form-control" placeholder="" @Html.Raw(Room==null?"":" value=\""+Room["Location"]+"\"") />
+                    <input id="AddressLongitude" name="Longitude" type="hidden"  @Html.Raw(Room==null?"":" value=\""+Room["Longitude"] +"\"") />
+                    <input id="AddressLatitude" name="Latitude" type="hidden"  @Html.Raw(Room==null?"":" value=\""+Room["Latitude"] +"\"") />
+                </div>
+            </div>
+
+            <div class="NewRoomRow">
+                <div class="ProfileLabel">
+                    <span>Price</span>
+                </div>
+                <div class="ProfileInput">
+                    <input id="NewRoomPrice" name="Price" type="text" class="form-control" style="width:50%;" @Html.Raw(Room==null?"":" value=\""+Room["Price"] +"\"") />
+                </div>
+            </div>
+
+            <div class="NewRoomRow">
+                <div class="ProfileLabel">
+                    <span>Introduction</span>
+                </div>
+                <div class="ProfileInput">
+                    <textarea id="NewRoomIntro" style="height:200px;" name="Intro" class="form-control">@Html.Raw(Room == null ? "" : "" + Room["RoomIntro"]) </textarea>
+                </div>
+            </div>
+
+            <div class="NewRoomRow">
+                <div class="ProfileLabel">
+                    <span>Amenities</span>
+                </div>
+                <div class="ProfileInput">
+                    <label class="NewRoomCheckbox"><input type="checkbox" name="Amenities" value="Wifi" @(AmenitySet.Contains("Wifi")?"checked":"") />Wifi</label>
+                    <label class="NewRoomCheckbox"><input type="checkbox" name="Amenities" value="Kitchen" @(AmenitySet.Contains("Kitchen") ?"checked":"") />Kitchen</label>
+                    <label class="NewRoomCheckbox"><input type="checkbox" name="Amenities" value="TV" @(AmenitySet.Contains("TV") ?"checked":"") />TV</label>
+                    <label class="NewRoomCheckbox"><input type="checkbox" name="Amenities" value="Parking" @(AmenitySet.Contains("Parking") ?"checked":"")/>Parking</label>
+                    <label class="NewRoomCheckbox"><input type="checkbox" name="Amenities" value="Washer" @(AmenitySet.Contains("Washer") ?"checked":"") />Washer</label>
+                    <div style="clear:both;"></div>
+                </div>
+            </div>
+
+            <div class="NewRoomRow">
+                <div class="ProfileLabel">
+                    <span>Images</span>
+                </div>
+                <div class="ProfileInput">
+                    <div class="NewRoomFileUpload">
+                        <iframe style="width:350px;height:30px;" scrolling="no" frameborder="0" src="/User/UploadImage?callback=onNewRoomFileUploaded"></iframe>
+                    </div>
+
+                    <div id="NewRoomFileList" class="NewRoomFileList">
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="NewRoomRow">
+                <div class="ProfileLabel">
+
+                </div>
+                <div class="ProfileInput">
+                    <button class="btn btn-primary" onclick="submitRoom(); return false;">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script type="text/javascript">
+@if(Room!=null)
+{
+    foreach(Hashtable item in ViewBag.RoomImages)
+    {
+        @Html.Raw("onNewRoomFileUploaded('" + item["RoomImage"] + "');");
+    }
+}
+</script>
+

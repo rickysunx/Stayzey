@@ -1,0 +1,48 @@
+﻿@{
+    Layout = "Frame.cshtml";
+}
+@using System.Collections;
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".userNavListings").addClass("active");
+    });
+</script>
+
+<div class="booking_list">
+    <button class="btn btn-primary" onclick="window.location.href = '/User/NewRoom';">List a new room</button>
+</div>
+
+<div class="booking_list">
+    @foreach (Hashtable Room in ViewBag.Rooms)
+    {
+        <div class="booking_item">
+            <div class="booking_item_image">
+                <img src="@Room["RoomImage"]" />
+            </div>
+            <div class="booking_item_content">
+                <div class="booking_item_title"><a target="_blank" href="/Room?id=@Room["RoomId"]">@Room["RoomTitle"]</a></div>
+                <div class="booking_item_address">@Room["Location"]</div>
+                <div class="booking_item_price_row">
+                    <span class="booking_item_price"><b>Price:</b> $@Room["Price"]</span>
+                    <span class="booking_item_price"><b>Status:</b> @Html.Raw(((int)Room["Available"] == 1)?"<span style='color:#090;'>On List</span>":"<span style='color:#e00;'>Off List</span>")</span>
+                </div>
+                <div class="booking_item_time">Created In: @Room["CreateTime"]</div>
+                <div class="booking_item_actions">
+                    <a href="/User/EditRoom?id=@Room["RoomId"]">Edit</a>&nbsp;&nbsp;
+                    @if ((int)Room["Available"] == 1)
+                    {
+                        <a href="javascript:unlistRoom(@Room["RoomId"]);">Put Offline</a>
+                    }
+                    else
+                    {
+                        <a href="javascript:listRoom(@Room["RoomId"]);">Put Online</a>
+                    }
+                    &nbsp;&nbsp;
+                    <a href="javascript:deleteRoom(@Room["RoomId"]);">Delete</a>&nbsp;&nbsp;
+                    <a target="_blank" href="/User/Bookings?RoomId=@Room["RoomId"]">Bookings(@Room["BookingCount"])</a>&nbsp;&nbsp;
+                </div>
+            </div>
+        </div>
+    }
+</div>

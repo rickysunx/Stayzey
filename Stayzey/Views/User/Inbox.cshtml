@@ -1,0 +1,44 @@
+﻿@{
+    Layout = "Frame.cshtml";
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".userNavInbox").addClass("active");
+    });
+</script>
+
+<div class="message_filter_container">
+    <select class="form-control message_filter" style="display:inline-block;margin-right:10px;">
+        <option>All Messages</option>
+        <option>Unread</option>
+    </select>
+
+    <button class="btn btn-primary" style="margin-top:-2px;">Delete</button>
+</div>
+
+<div class="message_list">
+    @for (int i = 1; i < 10; i++)
+    {
+        <div class="message_item">
+            <div class="message_checkbox">
+                <input type="checkbox"/>
+            </div>
+            <div class="message_from_image">
+                <img src="~/images/test/original.jpg"/>
+            </div>
+            <div class="message_from">
+                <div class="message_from_name">Jack Green</div>
+                <div class="message_from_time">5 hours ago</div>
+            </div>
+            <div class="message_content">
+                <div class="message_content_title">Hello</div>
+                <div class="message_content_brief">Hi,Jack: I noticed that you have a room in Auckland listed on Stayzey. I am a student...</div>
+            </div>
+        </div>
+    }
+
+    
+</div>
+
+<div style="height:50px;"></div>

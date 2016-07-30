@@ -1,0 +1,65 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Image Upload</title>
+    <style type="text/css">
+        body {
+            margin:0;
+            padding:0;
+        }
+
+        #input_file {
+            display:block;
+            float:left;
+            width:250px;
+            height:20px;
+            margin:0 5px 0 0;
+            border:1px solid #bbb;
+            font-size:12px;
+            font-weight:normal;
+        }
+
+        #input_button {
+            display:block;
+            float:left;
+            width:80px;
+            height:22px;
+            font-size:12px;
+            font-weight:normal;
+        }
+    </style>
+
+@{
+    string script0 = "";
+
+    if (ViewBag.ErrInfo != null)
+    {
+        script0 += "    alert(\"" + ViewBag.ErrInfo + "\");\r\n";
+    }
+
+    if(ViewBag.Success!=null && ViewBag.Success)
+    {
+        script0 += "parent." + ViewBag.callback + "(\"" + ViewBag.FileName + "\")";
+    }
+}
+
+<script type="text/javascript">
+@Html.Raw(script0) 
+</script>
+            
+</head>
+<body>
+    <div>
+        <form action="/User/UploadImage" enctype="multipart/form-data" method="post">
+            <input name="callback" type="hidden" value="@ViewBag.callback"/>
+            <input id="input_file" name="file" type="file" /> <input id="input_button" name="Submit" type="submit" value="Upload"/>
+        </form>
+    </div>
+</body>
+</html>

@@ -1,0 +1,107 @@
+﻿@{
+    Layout = "Frame.cshtml";
+}
+@using System;
+@using System.Collections;
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".userNavBookings").addClass("active");
+    });
+</script>
+
+<div class="booking_list">
+    @foreach(Hashtable item in ViewBag.Bookings)
+    {
+        int BookingStatus = (int)item["BookingStatus"];
+        <div class="booking_item">
+            <div class="booking_item_image">
+                <img src="@item["RoomImage"]" />
+            </div>
+            <div class="booking_item_content">
+                <div class="booking_item_title"><a target="_blank" href="/Room?id=@item["RoomId"]">@item["RoomTitle"]</a></div>
+                <div class="booking_item_address">@item["Location"]</div>
+                <div class="booking_item_price_row">
+                    <span class="booking_item_price"><b>Price:</b> $@item["Price"]</span>
+                    <span class="booking_item_price"><b>Status:</b> <span style="color:#555;">@ViewBag.BookingStatuses[(int)item["BookingStatus"]]</span></span>
+                </div>
+                <div class="booking_item_time">
+                    <b>Move In:</b> @(((DateTime)item["StartDate"]).ToString("dd MMM yyyy"))
+                    <b>Move Out:</b> @(((DateTime)item["EndDate"]).ToString("dd MMM yyyy"))
+                </div>
+                <div class="booking_item_actions">
+                    @if (ViewBag.UserType == 1)
+                    {
+                        if (BookingStatus == 0)
+                        {
+                            <a href="javascript:acceptBooking(@item["BookingId"]);">Accept</a><span>&nbsp; &nbsp;</span>
+                            <a href="javascript:rejectBooking(@item["BookingId"]);">Reject</a><span>&nbsp; &nbsp;</span>
+                        }
+                    }
+                    else
+                    {
+                        if (BookingStatus == 0 || BookingStatus == 2 || BookingStatus == 4)
+                        {
+                            if (BookingStatus != 4)
+                            {
+                                <a href="javascript:cancelBooking(@item["BookingId"]);">Cancel</a><span>&nbsp; &nbsp;</span>
+                            }
+                            <a href="javascript:deleteBooking(@item["BookingId"]);">Delete</a><span>&nbsp; &nbsp;</span>
+                        }
+                        if (BookingStatus == 1)
+                        {
+                            <a href="javascript:payBooking(@item["BookingId"]);">Pay</a><span>&nbsp; &nbsp;</span>
+                        }
+                        if (BookingStatus == 3)
+                        {
+                            <a href="javascript:reviewBooking(@item["BookingId"]);">Review</a><span>&nbsp; &nbsp;</span>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+
+<div class="modal fade media-middle" id="ReviewDialog" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="gridSystemModalLabel"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> Review</h4>
+            </div>
+            <form id="form_review">
+                <input id="review_booking_id" name="BookingId" type="hidden" />
+                <input id="star_rating_input" name="ReviewMark" type="hidden" value="1"/>
+                <div class="modal-body" style="padding:20px;">
+                    <div class="form-group has-feedback signup_form_group">
+                        <label class="control-label" for="signup_firstname">Your Rating</label>
+                        <div id="star_rating_container" class="star_rating_container">
+                            <div id="star_rating_block_1" _rating="1" class="star_rating_block star_rating_block_selected"></div>
+                            <div id="star_rating_block_2" _rating="2" class="star_rating_block"></div>
+                            <div id="star_rating_block_3" _rating="3" class="star_rating_block"></div>
+                            <div id="star_rating_block_4" _rating="4" class="star_rating_block"></div>
+                            <div id="star_rating_block_5" _rating="5" class="star_rating_block"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group has-feedback signup_form_group">
+                        <label class="control-label" for="signup_lastname">Your Comment</label>
+                        <textarea style="width:100%;height:100px;" name="ReviewContent" class="form-control"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="submitReview();">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    window._ReviewDialogHTML = $("#ReviewDialog").html();
+</script>

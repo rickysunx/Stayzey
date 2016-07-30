@@ -1,0 +1,833 @@
+﻿body {
+    background-color:#EBECED;
+}
+
+.homepage_container {
+    background-image:url("/images/sailing.jpg");
+    height:440px;
+    padding:80px 0px 100px 0;
+}
+
+.homepage_searchbox_container {
+    margin:30px auto;
+    padding:40px 0;
+    background:rgba(0,0,0,0.5);
+    text-align:center;
+    min-width:100px;
+    width:80%;
+}
+
+.homepage_searchbox_address {
+    background-color:#fff;
+    display:block;
+    float:left;
+}
+
+.homepage_searchbox_row2 {
+    padding:5px 10px;
+    background-color:#333;
+    margin:10px 20px;
+}
+
+.homepage_searchbox_row2 span {
+    color:#FCCE01;
+    font-weight:bold;
+}
+
+.homepage_searchbox_row2 a {
+    color:#fff;
+}
+
+.homepage_searchbox_button {
+    margin:0;
+    display:block;
+    float:left;
+}
+
+.NewRoomFileUpload {
+    margin-top:7px;
+}
+
+.NewRoomFileList {
+    overflow:hidden;
+}
+
+.NewRoomFileListItem {
+    border:1px solid #999;
+    padding:5px 5px 0 5px;
+    margin:0 5px 5px 0;
+    float:left;
+}
+
+
+
+.NewRoomFileListItemImage {
+
+}
+
+.NewRoomFileListItemRemove {
+    text-align:center;
+    cursor:pointer;
+    color:#e00;
+}
+
+.warning_border {
+    border:1px solid #f00;
+}
+
+.logo_img {
+    width:28px;
+    height:28px;
+    float:left;
+    margin:-5px 5px 0 0;
+}
+
+.listpage_searchbox_container {
+    background-color:#003144;
+    text-align:center;
+    padding:20px 0 5px 0;
+}
+
+#list_address {
+    margin:0 5px 10px 0;
+}
+
+.listpage_searchbox_row {
+    width:80%;
+    display:inline-block;
+    margin:0 0 0px 0;
+    text-align:left;
+}
+
+.listpage_searchbox_row2 {
+
+}
+
+.listpage_searchbox_block1 {
+    display:block;
+    float:left;
+    margin:0 15px 10px 0;
+    width:203px;
+}
+
+.listpage_searchbox_block2 {
+    display:block;
+    float:left;
+    margin:0 15px 10px 0;
+}
+
+.listpage_searchbox_block_select {
+    display:inline-block;
+    width:auto;
+}
+
+.listpage_searchbox_block_text {
+    color:#fff;
+}
+
+.listpage_form_control {
+    width:inherit;
+}
+
+.list_page_search_label {
+    color:#fff;
+    display:block;
+    padding:0 0 2px 2px;
+}
+
+.list_page_searchbox_button {
+    padding-left:25px;
+    padding-right:30px;
+}
+
+.room_item {
+    padding:10px;
+}
+
+.room_item_container {
+    background-color:#fff;
+    border:1px solid #bbb;
+    box-shadow: 2px 2px 2px #aaa;
+    cursor:pointer;
+}
+
+.room_item_title {
+    overflow:hidden;
+    height:20px;
+}
+
+.homepage_searchbox_container1 {
+    margin:0 auto;
+    width:80%;
+    text-align:left;
+}
+
+.room_item_img_container {
+    text-align:center;
+    width:100%;
+    height:100%;
+    background-color:#BBBBBB;
+}
+
+.room_item_img {
+    height:200px;
+    width:100%;
+}
+
+@media(max-width:600px) {
+    .room_item_img {
+        height:150px;
+        max-width:100%;
+    }
+}
+
+.room_item_text {
+    padding:10px 20px;
+}
+
+.room_item_price {
+    color:#C94A30;
+    overflow:hidden;
+}
+
+.room_item_price_left {
+    display:block;
+    float:left;
+}
+
+.room_item_price_distance {
+    display:block;
+    float:right;
+    margin-right:50px;
+    color:#999;
+}
+
+.room_item_avatar {
+    float:right;
+    margin-top:-45px;
+    margin-right:-10px;
+}
+
+.avatar_img {
+    width:50px;
+    height:50px;
+    border-radius:50px;
+    border:1px solid #eee;
+    box-shadow: 1px 1px 1px #aaa;
+}
+
+#profile_image {
+    margin:0 0 10px 0;
+}
+
+.room_item_avatar img {
+    width:50px;
+    height:50px;
+    border-radius:50px;
+    border:1px solid #eee;
+    box-shadow: 1px 1px 1px #aaa;
+}
+
+.room_avatar {
+    margin:0 auto;
+    text-align:center;
+}
+
+.room_avatar img {
+    width:80px;
+    height:80px;
+    border-radius:50px;
+    border:1px solid #eee;
+    box-shadow: 1px 1px 1px #aaa;
+}
+
+.room_header {
+    margin-bottom:20px;
+}
+
+@media(max-width:768px) {
+    .room_title {
+        text-align:center;
+    }
+    .room_address {
+        text-align:center;
+    }
+    .room_price {
+        text-align:center;
+    }
+    .list_page_searchbox_button span {
+        display:none;
+    }
+    .list_page_searchbox_button {
+        width:50px;
+        padding-left:inherit;
+        padding-right:inherit;
+    }
+}
+
+.room_title {
+    font-weight:bold;
+    font-size:24px;
+}
+.room_address {
+    font-size:14px;
+    color:#757575;
+}
+.room_price {
+    font-size:14px;
+    color:#e00;
+}
+
+
+.room_list {
+    background-color:#fff;
+    padding:15px 30px;
+    border:1px solid #ccc;
+    box-shadow: 0px 0px 2px #ccc;
+    margin-top:10px;
+    max-width:1024px;
+}
+
+.room_list_sort_container {
+    margin-top:10px;
+    max-width:1024px;
+    padding:0;
+}
+
+.list_search_sort {
+    width:180px;;
+}
+
+.room_detail {
+    background-color:#fff;
+    padding:15px 30px;
+    border:1px solid #ccc;
+    box-shadow: 1px 0px 2px #ccc;
+    margin-top:10px;
+    max-width:800px;
+    min-width:360px;
+}
+
+.room_images {
+    text-align:center;
+}
+
+.room_content {
+
+}
+
+.room_booking {
+    border-width:0 1px 1px 1px;
+    border-style:solid;
+    border-color:#DCE0E0;
+    margin:0 auto 15px auto;
+    background-color:#fafafa;
+}
+
+.room_booking_title {
+    background-color:#4F5152;
+    padding:5px 10px;
+    color:#fff;
+    font-size:20px;
+    margin-top:15px;
+}
+
+.room_booking_dates {
+    padding:10px 20px;
+    overflow:hidden;
+}
+
+.room_booking_dates_label {
+    width:50px;
+    float:left;
+    padding-top:3px;
+}
+
+.room_booking_dates_input {
+    float:left;
+}
+
+.room_booking_dates_input input {
+    min-width:250px;
+    padding:0 15px;
+    cursor:pointer;
+}
+
+.room_booking_button {
+    padding:0px 20px 10px 20px;
+}
+
+.room_booking_button button {
+    display:block;
+    color:#fff;
+    background-color:#ff5a5f;
+    margin:0 auto;
+    width:100%;
+    height:35px;
+    border:1px solid #FF5A5F;
+    border-radius:4px;
+}
+
+.room_booking_button button:hover,.room_booking_button button:focus {
+    background-color:#FF6A6F;
+}
+
+.room_booking_table {
+    padding:0 20px 10px 20px;
+}
+
+.room_booking_table table {
+    width:100%;
+}
+
+.room_booking_table_col1 {
+    width:70%;
+    border-bottom:1px solid #eee;
+    padding:8px 0 5px 10px;
+}
+
+.room_booking_table_col2 {
+    width:30%;
+    text-align:right;
+    border-bottom:1px solid #eee;
+    padding:8px 10px 5px 0px;
+}
+
+.room_booking_table_last_line {
+    border:0;
+}
+
+.room_amenity {
+    overflow:hidden;
+    zoom:1;
+}
+
+.amenity_icon {
+    float:left;
+    height:30px;
+    width:100px;
+}
+
+.amenity_icon i {
+    display:block;
+    width:30px;
+    height:30px;
+    background-image:url('/images/icons.png');
+    background-repeat:no-repeat;
+    background-size:300px 300px;
+    float:left;
+}
+
+.amenity_icon span {
+    display:block;
+    float:left;
+    margin:6px 0 0 3px;
+}
+
+.amenity_icon_Wifi {
+    background-position:-60px -30px;
+}
+
+.amenity_icon_Kitchen {
+    background-position:-90px -30px;
+}
+
+.amenity_icon_TV {
+    background-position:-30px -30px;
+}
+
+.amenity_icon_Parking {
+    background-position:-210px -30px;
+}
+
+.amenity_icon_Washer {
+    background-position:-180px -60px;
+}
+
+.signup_form_group {
+
+}
+
+.signup_form_group label {
+    color:#666;
+}
+
+.signup_form_group span {
+    color:#777;
+}
+
+.navbar_user_link {
+
+}
+
+.navbar_user_link img {
+    width:30px;
+    height:30px;
+    margin:-5px 10px 0 0;
+    padding:0;
+    border-radius:30px;
+    display:block;
+    margin-right:10px;
+    float:left;
+    border:1px solid #ccc;
+}
+
+.signup_input {
+    display:block;
+    margin:5px 0;
+    width:100%;
+    padding:5px 20px;
+}
+
+.user_nav_collapse {
+    background-color:#484848;
+    padding:5px 0;
+}
+
+.user_nav_collapse_container {
+    width:90%;
+    margin:0 auto;
+}
+
+.user_nav_container {
+    text-align:center;
+}
+
+.user_nav {
+    background-color:#484848;
+    height:40px;
+    overflow:hidden;
+}
+
+.user_nav ul {
+    margin:0 auto;
+    padding:0;
+    overflow:hidden;
+    display:block;
+}
+
+.user_nav li {
+    list-style:none;
+    display:inline-block;
+    margin:5px 10px 0 10px;
+    padding:5px 10px;
+}
+
+.user_nav li:hover {
+    background-color:#777;
+    cursor:pointer;
+}
+
+.user_nav .active {
+    border-bottom:5px solid #007A87;
+}
+
+.user_nav li a {
+    color:#eee;
+    text-decoration:none;
+}
+
+
+
+.ProfileContainer {
+    width:700px;
+    border:1px solid #999;
+    margin:10px auto;
+    background-color:#fff;
+    min-width:360px;
+    border-radius:5px;
+}
+
+.ProfileTitle {
+    background-color:#eee;
+    padding:5px 20px;
+    border-bottom:1px solid #999;
+    font-weight:bold;
+    font-size:20px;
+    border-radius:5px 5px 0 0;
+}
+
+.ProfileContent {
+    padding:20px 20px;
+}
+
+.ProfileRow {
+    padding:10px 0;
+}
+
+.ProfileLabel {
+    float:left;
+    width:100px;
+    text-align:right;
+}
+
+.ProfileInput {
+    margin:-7px 10px 0 110px;
+}
+
+.ProfileControls {
+    display:inline-block;
+    margin-right:5px;
+}
+
+.NewRoomRow {
+    padding:10px 0;
+}
+
+.NewRoomCheckbox {
+    font-weight:normal;
+    display:block;
+    margin:0px 15px 5px 0;
+    float:left;
+}
+
+.NewRoomCheckbox input {
+    margin:4px 2px 0 0;
+    display:block;
+    float:left;
+}
+
+.message_filter_container {
+    width:700px;
+    margin:0 auto;
+}
+
+.message_filter {
+    width:150px;
+    margin:10px 0;
+}
+
+.message_list {
+    width:700px;
+    margin:0 auto 0 auto;
+    min-width:360px;
+    border: 1px solid #c9c9c9;
+    padding:0 20px;
+    background-color:#fff;
+    border-radius:5px;
+}
+
+.message_item {
+    border-bottom:1px solid #ddd;
+    padding:10px;
+}
+
+.message_item:hover {
+    background-color:#E6F3F9;
+}
+
+.message_item:last-child {
+    border:0;
+}
+
+.message_checkbox {
+    float:left;
+    width:20px;
+    margin-top:10px;
+}
+
+.message_from_image {
+    float:left;
+}
+
+.message_from_image img {
+    width:40px;
+    height:40px;
+    border-radius:5px;
+}
+
+.message_from {
+    float:left;
+    margin:0 0 0 10px;
+    width:100px;
+}
+
+.message_from_name {
+    font-weight:bold;
+    font-size:14px;
+}
+
+.message_from_time {
+    color:#999;
+    font-size:12px;
+}
+
+.message_content {
+    
+}
+
+.message_content_title {
+    font-size:14px;
+    font-weight:bold;
+    text-decoration:underline;
+    color:#007A87;
+}
+
+.message_content_brief {
+    font-size:12px;
+    color:#999;
+}
+
+.booking_list {
+    width:700px;
+    margin:10px auto;
+}
+
+.booking_item {
+    border:1px solid #ccc;
+    background-color:#fff;
+    margin:10px 0;
+    height:142px;
+    border-radius:5px;
+    overflow:hidden;
+}
+
+.booking_item_image {
+}
+
+.booking_item_image img {
+    width:150px;
+    height:140px;
+}
+
+.booking_item_content {
+    margin:-130px 0 10px 160px;
+}
+
+.booking_item_content div {
+    margin:0 0 5px 0;
+    white-space:nowrap;
+}
+
+.booking_item_title {
+    font-weight:bold;
+    font-size:16px;
+}
+
+.booking_item_address {
+    font-size:14px;
+    color:#999;
+}
+
+.booking_item_price {
+    font-size:14px;
+    color:#f00;
+}
+
+.booking_item_price b {
+    color:#333;
+}
+
+.star_rating_container {
+    height:30px;
+    overflow:hidden;
+}
+
+.star_rating_block {
+    float:left;
+    width:30px;
+    height:30px;
+    cursor:pointer;
+    background-image:url("/images/5stars.png");
+    background-position:-30px 0;
+}
+
+.review_star_block {
+    float:left;
+    width:20px;
+    height:20px;
+    cursor:pointer;
+    background-image:url("/images/5stars.png");
+    background-position:-20px 0;
+    background-size:auto 20px;
+}
+
+.star_rating_block_selected {
+    background-position:0 0;
+}
+
+
+
+.ReviewItem {
+    border:1px solid #999;
+    margin-bottom:10px;
+}
+
+.ReviewTitle {
+    background-color:#EBECED;
+    overflow:hidden;
+    padding:5px 10px;
+    border-bottom:1px solid #999;
+}
+
+.ReviewRating {
+    float:left;
+}
+
+.ReviewName {
+    float:left;
+    margin-right:5px;
+}
+
+.ReviewTime {
+    float:right;
+}
+
+.ReviewContent {
+    padding:5px 10px;
+}
+
+@media(max-width:768px) {
+    .ProfileContainer {
+        margin:10px auto;
+        border:1px solid #999;
+        width:90%;
+    }
+
+    .booking_list {
+        width:90%;
+    }
+    
+    .message_list {
+        width:90%;
+        margin:0 auto;
+    }
+
+    .message_filter_container {
+        width:90%;
+        margin:10px auto;
+    }
+
+    .message_from {
+        
+    }
+
+    .message_content {
+        clear:both;
+        margin-top:20px;
+        margin-left:70px;
+    }
+
+    .ProfileRow {
+        
+    }
+
+    .ProfileLabel {
+        float:none;
+        text-align:left;
+    }
+
+    .ProfileInput {
+        margin:5px 0 0 0;
+    }
+}
+
+@media(min-width:1280px)
+{
+    .homepage_container {
+        background-image:url("/images/sailing.jpg");
+        height:550px;
+        padding:80px 0px 100px 0;
+        background-size:1920px 550px;
+    }
+}

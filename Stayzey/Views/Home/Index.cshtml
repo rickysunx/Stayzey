@@ -1,0 +1,75 @@
+﻿@{
+    Layout = "../Common/Frame.cshtml";
+}
+
+
+<script type="text/javascript">
+    var autoComplete;
+    function fillInAddress() {
+        var place = autoComplete.getPlace();
+        var geometry = place.geometry;
+        var location = geometry.location;
+        $("#homepage_longitude").val(new Number(location.lng()).toFixed(7));
+        $("#homepage_latitude").val(new Number(location.lat()).toFixed(7));
+        $("#homepage_searchbox").removeClass("warning_border");
+    }
+
+    function initMap() {
+        autoComplete = new google.maps.places.Autocomplete(
+            document.getElementById('homepage_searchbox'), { types: ['geocode'] });
+        autoComplete.addListener("place_changed", fillInAddress);
+    };
+
+    function onHomeSubmit() {
+        var lng = $("#homepage_longitude").val();
+        var lat = $("#homepage_latitude").val();
+        if (lng != null && lat != null && lng.length > 0 && lat.length > 0) {
+            return true;
+        } else {
+            $("#homepage_searchbox").addClass("warning_border");
+            return false;
+        }
+    }
+        
+</script>
+
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBzQpLJb5mfDZwGjmez9TfHQUrTXhBiOUg&libraries=places&callback=initMap" async defer></script>
+
+
+<div class="homepage_container">
+    <div class="homepage_searchbox_container">
+        <div class="homepage_searchbox_container1">
+            <div style="overflow:hidden;">
+                <form action="/List" method="get" onsubmit="return onHomeSubmit();">
+                    <input type="text" id="homepage_searchbox" name="address" style="display:inline-block;" class="homepage_searchbox_address form-control" placeholder="Address" />
+                    <input type="hidden" id="homepage_longitude" name="lng" />
+                    <input type="hidden" id="homepage_latitude" name="lat" />
+                    <input type="submit" id="homepage_submit_button" class="btn btn-primary homepage_searchbox_button" value="Search" />
+                </form>
+            </div>
+
+            <div class="homepage_searchbox_row2">
+                <span>Popular:&nbsp;&nbsp;</span>
+                <a href="/List?address=University+of+Auckland%2C+Auckland%2C+New+Zealand&lng=174.7703765&lat=-36.8504642">Auckland University</a>&nbsp;&nbsp;&nbsp;&nbsp;
+                <a href="/List?address=450+Queen+Street%2C+Auckland%2C+New+Zealand&lng=174.7631039&lat=-36.8553610">Whitireia</a>&nbsp;&nbsp;&nbsp;&nbsp;
+                <a href="/List?address=Unitec+Carrington+Rd%2C+Auckland%2C+New+Zealand&lng=174.7111800&lat=-36.8792700">Unitec</a>&nbsp;&nbsp;&nbsp;&nbsp;
+                <a href="/List?address=Waikato+University+%28Hamilton%29%2C+Hamilton%2C+Waikato%2C+New+Zealand&lng=175.3121210&lat=-37.7871830">Waikato University</a>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    function resizeInput() {
+        $("#homepage_searchbox").width(
+            $(".homepage_searchbox_container1").innerWidth() -
+            $("#homepage_submit_button").outerWidth() - 30);
+    }
+    $(window).resize(resizeInput);
+    resizeInput();
+
+</script>

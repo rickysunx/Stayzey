@@ -1,0 +1,141 @@
+﻿@{
+    Layout = "../Common/Frame.cshtml";
+}
+@using System.Collections;
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#listpage_dates").daterangepicker({
+            isInvalidDate:function(date) {
+                return false;
+            },
+            isInvalidRange:function(start,end) {
+                start.hour(0);
+                start.minute(0);
+                start.second(0);
+                start.millisecond(0);
+                end.hour(0);
+                end.minute(0);
+                end.second(0);
+                end.millisecond(0);
+                if((end-start)>=86400000*7) {
+                    return false;
+                }
+                return true;
+            },
+            autoApply:true,
+            linkedCalendars:true,
+            minDate:new Date(),
+            locale: {format:"DD/MM/YYYY"}
+        });
+
+        $("#listpage_dates").on("apply.daterangepicker",function(){
+            var m = 9;
+        });
+        $("#sortby").change(function(){
+            $("#list_form").submit();
+        });
+    });
+
+    var autoComplete;
+    function fillInAddress() {
+        var place = autoComplete.getPlace();
+        var geometry = place.geometry;
+        var location = geometry.location;
+        $("#list_latitude").val(new Number(location.lat()).toFixed(7));
+        $("#list_longitude").val(new Number(location.lng()).toFixed(7));
+    }
+
+    function initMap() {
+        autoComplete = new google.maps.places.Autocomplete(
+            document.getElementById("list_address"), { types: ["geocode"] });
+        autoComplete.addListener("place_changed", fillInAddress);
+    }
+
+
+</script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBzQpLJb5mfDZwGjmez9TfHQUrTXhBiOUg&libraries=places&callback=initMap" async defer></script>
+
+<form id="list_form"  method="get" action="/List">
+
+    <input id="list_latitude" name="lat" type="hidden" value="@Request["lat"]" />
+    <input id="list_longitude" name="lng" type="hidden" value="@Request["lng"]" />
+
+    <div class="listpage_searchbox_container">
+        <div class="row listpage_searchbox_row">
+            <input id="list_address" name="address" class="form-control" type="text" placeholder="Where to?" value="@Request["address"]" />
+            
+        </div>
+        <div class="row listpage_searchbox_row listpage_searchbox_row2">
+            <div class="listpage_searchbox_block1">
+                <input id="listpage_dates" name="dates" type="text" class="form-control" />
+            </div>
+            <div class="listpage_searchbox_block2">
+                <select name="minPrice" class="form-control listpage_searchbox_block_select">
+                    @for (int i = 0; i <= 2000; i += 50)
+                    {
+                        <option @(ViewBag.minPrice==i?" selected ":"") value="@i">$@i</option>
+                    }
+                    
+                </select>
+                <span class="listpage_searchbox_block_text">to</span>
+                <select name="maxPrice" class="form-control listpage_searchbox_block_select">
+                    <option value="Any">Any</option>
+                    @for (int i = 100; i <= 2000; i += 50)
+                    {
+                        <option @(ViewBag.maxPrice==i?" selected ":"") value="@i">$@i</option>
+                    }
+                    
+                </select>
+            </div>
+            <div class="listpage_searchbox_block2">
+                <select name="distance" class="form-control listpage_searchbox_block_select">
+                    <option value="1"@(Request["distance"]=="1"?" selected":"")>1km</option>
+                    <option value="3"@(Request["distance"]=="3"?" selected":"")>3km</option>
+                    <option value="5"@(Request["distance"]=="5"?" selected":"")>5km</option>
+                    <option value="10"@(Request["distance"]=="10"?" selected":"")>10km</option>
+                    <option value="30"@(Request["distance"]==null||Request["distance"]=="30"?" selected":"")>30km</option>
+                </select>
+            </div>
+            <div class="listpage_searchbox_block2">
+                <button class="list_page_searchbox_button btn btn-primary">
+                    <i class="glyphicon glyphicon-search" aria-hidden="true"></i>
+                    <span>Search</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="room_list_sort_container container">
+        <select id="sortby" name="sortby" class="form-control list_search_sort">
+            <option value="distance">Sort by distance</option>
+            <option value="price_lth"@(Request["sortby"]=="price_lth"?" selected":"")>Lowest price first</option>
+            <option value="price_htl"@(Request["sortby"]=="price_htl"?" selected":"")>Highest price first</option>
+        </select>
+    </div>
+
+</form>
+
+
+
+<div class="room_list container">
+    <div class="row">
+        @foreach (Hashtable room in ViewBag.Rooms)
+        {
+            <div class="room_item col-xs-6 col-md-4" onclick="window.open('/Room?id=@room["RoomId"]');">
+                <div class="room_item_container">
+                    <div class="room_item_img_container"><img class="room_item_img" src="@room["RoomImage"]" /></div>
+                    <div class="room_item_text">
+                        <div class="room_item_title">@room["RoomTitle"]</div>
+                        <div class="room_item_price">
+                            <span class="room_item_price_left">NZ$@room["Price"]</span> 
+                            <span class="room_item_price_distance">@String.Format("{0:f3}", room["distance"])km</span>
+                        </div>
+                        <div class="room_item_avatar"><img src="@room["Avatar"]" /></div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
