@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Web;
 using System.Web.Mvc;
 
@@ -473,7 +474,8 @@ namespace Stayzey.Controllers
                     string newFilePath = Path.Combine(imageFolder, newFileName);
 
                     file.SaveAs(newFilePath);
-
+                    
+                    
                     ViewBag.FileName = "/UploadImages/" + newFileName;
                     ViewBag.Success = true;
                     

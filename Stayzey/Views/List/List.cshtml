@@ -123,7 +123,7 @@
     <div class="row">
         @foreach (Hashtable room in ViewBag.Rooms)
         {
-            <div class="room_item col-xs-6 col-md-4" onclick="window.open('/Room?id=@room["RoomId"]');">
+            <div class="room_item col-xxs-12 col-xs-6 col-md-4 col-lg-3" onclick="window.open('/Room?id=@room["RoomId"]');">
                 <div class="room_item_container">
                     <div class="room_item_img_container"><img class="room_item_img" src="@room["RoomImage"]" /></div>
                     <div class="room_item_text">
