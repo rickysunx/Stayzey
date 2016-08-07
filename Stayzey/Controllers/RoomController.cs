@@ -43,7 +43,7 @@ namespace Stayzey.Controllers
                 List<Hashtable> roomReviews = db.Query("select * from Reviews r,Users u where r.UserId=u.UserId and r.BookingId in (select b.BookingId from Bookings b where b.RoomId=" + id + " )");
                 ViewBag.RoomReviews = roomReviews;
 
-                List<Hashtable> roomBookings = db.Query("select * from Bookings where roomid=" + id);
+                List<Hashtable> roomBookings = db.Query("select * from Bookings where roomid=" + id + " and BookingStatus in (0,1,3,6) ");
                 string bookingArrayScript = "var RoomBookings = [ ";
                 foreach(Hashtable item in roomBookings)
                 {

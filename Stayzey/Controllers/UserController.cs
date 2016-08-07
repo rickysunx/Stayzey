@@ -6,6 +6,9 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
+using System.Text;
 using System.Web;
 using System.Web.Mvc;
 
@@ -845,6 +848,11 @@ namespace Stayzey.Controllers
             return JsonAllowGet(data);
         }
 
+        public static bool ValidateServerCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
+        {
+            return true;
+        }
+
         public ActionResult PayBooking(string id)
         {
             Hashtable data = new Hashtable();
@@ -859,9 +867,71 @@ namespace Stayzey.Controllers
                     data["error_info"] = "Please login first";
                     return JsonAllowGet(data);
                 }
+
                 int nId = int.Parse(id);
-                db.Update("Update Bookings set BookingStatus=3 where BookingId=" + nId);
+                List<Hashtable> result = db.Query("select * from Bookings where BookingId=" + nId);
+                if (result.Count == 0)
+                {
+                    throw new Exception("Booking not found");
+                }
+
+                decimal totalFee = (decimal)(result[0]["Total"]);
+                
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                ServicePointManager.ServerCertificateValidationCallback += new System.Net.Security.RemoteCertificateValidationCallback(ValidateServerCertificate);
+
+                WebRequest request = WebRequest.Create("https://api-3t.sandbox.paypal.com/nvp");
+                request.Method = "POST";
+                request.Credentials = CredentialCache.DefaultCredentials;
+                
+                string postData = "";
+
+                postData += "USER=" + HttpUtility.UrlEncode("################");
+                postData += "&PWD=" + HttpUtility.UrlEncode("#####################");
+                postData += "&SIGNATURE=" + HttpUtility.UrlEncode("####################################");
+                postData += "&METHOD=" + HttpUtility.UrlEncode("SetExpressCheckout");
+                postData += "&VERSION=" + HttpUtility.UrlEncode("93");
+                postData += "&PAYMENTREQUEST_0_PAYMENTACTION=" + HttpUtility.UrlEncode("SALE");
+                postData += "&PAYMENTREQUEST_0_AMT=" + HttpUtility.UrlEncode("" + totalFee);
+                postData += "&PAYMENTREQUEST_0_CURRENCYCODE=" + HttpUtility.UrlEncode("NZD");
+                postData += "&RETURNURL=" + HttpUtility.UrlEncode("http://stayzey.azurewebsites.net/User/PaySuccess?id="+nId);
+                postData += "&CANCELURL=" + HttpUtility.UrlEncode("http://stayzey.azurewebsites.net/User/PayFail?id=");
+
+                byte[] byteArray = Encoding.UTF8.GetBytes(postData);
+                request.ContentType = "application/x-www-form-urlencoded";
+                request.ContentLength = byteArray.Length;
+                Stream dataStream = request.GetRequestStream();
+                dataStream.Write(byteArray, 0, byteArray.Length);
+                dataStream.Close();
+                WebResponse response = request.GetResponse();
+                dataStream = response.GetResponseStream();
+                StreamReader reader = new StreamReader(dataStream);
+                string responseFromServer = reader.ReadToEnd();
+                reader.Close();
+                dataStream.Close();
+                response.Close();
+
+                //parse token
+                string[] responseValues = responseFromServer.Split('&');
+                string tokenValue = null;
+                foreach(string responseValue in responseValues)
+                {
+                    string [] keyValuePair = responseValue.Split('=');
+                    string key = keyValuePair[0];
+                    string value = keyValuePair[1];
+
+                    if (key == "TOKEN")
+                    {
+                        tokenValue = HttpUtility.UrlDecode(value);
+                    }
+                }
+
                 data["success"] = 1;
+                data["url"] = "https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token=" + tokenValue;
+
+                //int nId = int.Parse(id);
+                //db.Update("Update Bookings set BookingStatus=3 where BookingId=" + nId);
+                //data["success"] = 1;
             }
             catch (Exception ex)
             {
@@ -926,6 +996,21 @@ namespace Stayzey.Controllers
             return JsonAllowGet(data);
         }
 
+        public ActionResult PaySuccess(string id)
+        {
+
+            //TODO check the payment 
+
+
+            int nId = int.Parse(id);
+            db.Update("Update Bookings set BookingStatus=3 where BookingId=" + nId);
+            return Redirect("/User/Bookings");
+        }
+
+        public ActionResult PayFail(string id)
+        {
+            return View("/User/Bookings");
+        }
 
 
     }

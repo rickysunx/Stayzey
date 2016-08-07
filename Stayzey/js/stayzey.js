@@ -173,11 +173,12 @@ function cancelBooking(id) {
 function payBooking(id) {
     sendRequest("/User/PayBooking", { id: id }, function (result) {
         if (result.success == 1) {
-            window.location.reload();
+            window.location.href = result.url;
         } else {
             alert(result.error_info);
         }
     });
+    
 }
 
 function reviewBooking(id) {
