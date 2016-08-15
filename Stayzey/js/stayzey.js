@@ -1,10 +1,11 @@
 ﻿/*
  * Stayzey website javascript
  * Created by: Ricky Sun
- * Date: 15/June/2016
+ * Date: 15/06/2016
  *
  */
 
+//Show sign up dialog
 function onSignUp() {
     $("#SignUpDialog").modal({
         backdrop: "static",
@@ -12,10 +13,12 @@ function onSignUp() {
     });
 }
 
+//Show log in dialog
 function onLogIn() {
     $("#LoginDialog").modal();
 }
 
+//Send http request by ajax
 function sendRequest(url,data,callback) {
     jQuery.ajax(url, {
         data: data,
@@ -27,10 +30,12 @@ function sendRequest(url,data,callback) {
     });
 }
 
+//Send form by ajax request
 function submitForm(url, formid, callback) {
     sendRequest(url, $("#" + formid).serialize(), callback);
 }
 
+//Handle errors
 function formShowError(error_info,error_id) {
     if (error_info) {
         $("#"+error_id).removeClass("has-success");
@@ -51,6 +56,7 @@ function formShowError(error_info,error_id) {
     }
 }
 
+//Submit sign up form
 function submitSignUp() {
     submitForm("/User/SignUp", "form_signup", function (result) {
         if (result.success == 1) {
@@ -67,6 +73,7 @@ function submitSignUp() {
     });
 }
 
+//Submit log in form
 function submitLogin() {
     submitForm("/User/LogIn", "form_login", function (result) {
         if (result.success == 1) {
@@ -79,12 +86,14 @@ function submitLogin() {
     });
 }
 
+//Perform logout
 function onLogout() {
     sendRequest("/User/LogOut",{}, function () {
         window.location.href = "/";
     });
 }
 
+//Store html of sign up and login for reset the form where needed
 $(document).ready(function () {
     window.signup_dialog_html = $("#SignUpDialog").html();
     window.login_dialog_html = $("#LoginDialog").html();
@@ -106,6 +115,7 @@ $(document).ready(function () {
 
 var roomUploadFileId = 1;
 
+//Room file upload
 function onNewRoomFileUploaded(fileName) {
     roomUploadFileId++;
     var html = "<div id='RoomImage_" + roomUploadFileId + "' class='NewRoomFileListItem'>";
@@ -121,10 +131,12 @@ function onProfileImageUploaded(fileName) {
     $("#profile_image_input").val(fileName);
 }
 
+//Remove a image
 function removeRoomImageItem(id) {
     $("#RoomImage_" + id).remove();
 }
 
+//Submit room form
 function submitRoom() {
     submitForm("/User/SaveRoom", "NewRoomForm", function (result) {
         if (result.success == 1) {
@@ -136,6 +148,7 @@ function submitRoom() {
     });
 }
 
+//Submit profile form
 function onSubmitProfile() {
     submitForm("/User/SaveProfile", "ProfileForm", function (result) {
         if (result.success == 1) {
@@ -147,6 +160,7 @@ function onSubmitProfile() {
     });
 }
 
+//Delete a booking
 function deleteBooking(id) {
     if (confirm("Are sure to delete this booking?")) {
         sendRequest("/User/DeleteBooking", { id: id }, function (result) {
@@ -160,6 +174,7 @@ function deleteBooking(id) {
 
 }
 
+//Cancel a booking
 function cancelBooking(id) {
     sendRequest("/User/CancelBooking", { id: id }, function (result) {
         if (result.success == 1) {
@@ -170,6 +185,7 @@ function cancelBooking(id) {
     });
 }
 
+//Pay the booking
 function payBooking(id) {
     sendRequest("/User/PayBooking", { id: id }, function (result) {
         if (result.success == 1) {
@@ -181,6 +197,7 @@ function payBooking(id) {
     
 }
 
+//Review booking
 function reviewBooking(id) {
     $("#ReviewDialog").html(window._ReviewDialogHTML);
     $("#star_rating_container > div").hover(function () {
@@ -201,6 +218,7 @@ function reviewBooking(id) {
     });
 }
 
+//Submit review
 function submitReview() {
     submitForm("/User/SaveReview", "form_review", function (result) {
         if (result.success == 1) {
@@ -212,6 +230,7 @@ function submitReview() {
     });
 }
 
+//Accept booking request
 function acceptBooking(id) {
     sendRequest("/User/AcceptBooking", { id: id }, function (result) {
         if (result.success == 1) {
@@ -222,6 +241,7 @@ function acceptBooking(id) {
     });
 }
 
+//Reject booking request
 function rejectBooking(id) {
     sendRequest("/User/RejectBooking", { id: id }, function (result) {
         if (result.success == 1) {
@@ -232,6 +252,7 @@ function rejectBooking(id) {
     });
 }
 
+//Put room listing offline
 function unlistRoom(id) {
     sendRequest("/User/ChangeRoomStatus", { id: id,flag: 0 }, function (result) {
         if (result.success == 1) {
@@ -242,6 +263,7 @@ function unlistRoom(id) {
     });
 }
 
+//Restore room listing online
 function listRoom(id) {
     sendRequest("/User/ChangeRoomStatus", { id: id, flag: 1 }, function (result) {
         if (result.success == 1) {
@@ -252,6 +274,7 @@ function listRoom(id) {
     });
 }
 
+//Delete a room
 function deleteRoom(id) {
     if (confirm("Are you sure to delete this room?")) {
         sendRequest("/User/DeleteRoom", { id: id }, function (result) {

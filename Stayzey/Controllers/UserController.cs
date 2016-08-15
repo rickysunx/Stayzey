@@ -1,4 +1,13 @@
-﻿using System;
+﻿/*
+ * User Controller
+ * Author: Ricky Sun
+ * Date: 04/07/2016 
+ * 
+ * Provides user panel functions
+ * 
+ */
+  
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -14,7 +23,7 @@ using System.Web.Mvc;
 
 namespace Stayzey.Controllers
 {
-    /**
+    /*
      * Booking Status: 
      *  0-Newly Created
      *  1-Landlord Accepted
@@ -24,12 +33,13 @@ namespace Stayzey.Controllers
      *  5-Deleted
      *  6-Reviewed
      */
-
-    
+     
     public class UserController : StayzeyAbstractController
     {
 
-        public static HashSet<string> AcceptFileType;
+        public static HashSet<string> AcceptFileType;  //File types that are allowed for uploading
+
+        //Booking status mapping
         public static string[] BookingStatuses = new string[] {
             "Pending landlord acceptance",
             "Landlord Accepted",
@@ -39,6 +49,7 @@ namespace Stayzey.Controllers
         
         static UserController()
         {
+            //Initialize the file types that are allowed for uploading
             AcceptFileType = new HashSet<string>();
             AcceptFileType.Add(".jpg");
             AcceptFileType.Add(".jpeg");
@@ -46,12 +57,14 @@ namespace Stayzey.Controllers
             AcceptFileType.Add(".png");
         }
 
-        // GET: User
+        // Index page of user panel
+        // /User
         public ActionResult Index()
         {
             return View();
         }
 
+        // Save Profile
         public ActionResult SaveProfile(
             string FirstName,
             string LastName,
@@ -64,6 +77,7 @@ namespace Stayzey.Controllers
             string ProfileImage
         )
         {
+            //Check user login
             Hashtable result = new Hashtable();
             int userid = GetLoginUserId();
             if (userid == 0)
@@ -75,6 +89,7 @@ namespace Stayzey.Controllers
 
             try
             {
+                //Prepare item object for storing to database
                 Hashtable item = new Hashtable();
                 item["UserId"] = userid;
                 item["FirstName"] = FirstName;
@@ -84,15 +99,17 @@ namespace Stayzey.Controllers
                 item["Gender"] = Gender;
                 item["Avatar"] = ProfileImage;
 
+                //Check the birth day
                 int day = int.Parse(BirthDay);
                 int month = int.Parse(BirthMonth);
                 int year = int.Parse(BirthYear);
                 DateTime dateOfBirth = new DateTime(year,month,day);
                 item["DateOfBirth"] = dateOfBirth;
 
+                //Update user to database
                 db.Update("Users", item, "UserId");
 
-                //Reload User Object
+                //Reload user object to session
                 List<Hashtable> userList = db.Query("select * from Users where UserId="+userid);
                 if(userList.Count>0)
                 {
@@ -110,13 +127,17 @@ namespace Stayzey.Controllers
             return JsonAllowGet(result);
         }
 
+        //Display profile page
         public ActionResult MyProfile()
         {
+            //Get the logged user id
             int userid = GetLoginUserId();
             if (userid == 0)
             {
                 return Redirect("/#Login");
             }
+
+            //Query user data from database
             string sql = "select * from Users where UserId="+userid;
             List<Hashtable> data = db.Query(sql);
             if(data.Count>0)
@@ -129,25 +150,18 @@ namespace Stayzey.Controllers
             }
             return View();
         }
-
-        public ActionResult Inbox()
-        {
-            int userid = GetLoginUserId();
-            if (userid == 0)
-            {
-                return Redirect("/#Login");
-            }
-            return View();
-        }
-
+        
+        //Display room listings
         public ActionResult Listings()
         {
+            //Check login
             int userid = GetLoginUserId();
             if (userid == 0)
             {
                 return Redirect("/#Login");
             }
 
+            //Query room data from database
             List<Hashtable> rooms = db.Query("select r.*, (select count(1) from Bookings b where r.RoomId = b.RoomId and b.BookingStatus<>5) BookingCount from Rooms r where r.UserId =" + userid);
 
             ViewBag.Rooms = rooms;
@@ -155,17 +169,21 @@ namespace Stayzey.Controllers
             return View();
         }
 
+        //Display bookings
         public ActionResult Bookings(string RoomId)
         {
+            //Check login
             int userid = GetLoginUserId();
             if (userid == 0)
             {
                 return Redirect("/#Login");
             }
 
+            //Get user object from session
             Hashtable loginUser = (Hashtable)Session["login_user"];
             int userType = (int)loginUser["UserType"];
 
+            //Generate query sql for booking list
             string sql = "select b.BookingId,b.RoomId,b.Price,b.StartDate,b.EndDate,b.BookingStatus," +
                 " r.RoomTitle,r.Location,r.RoomImage " +
                 " from bookings b,rooms r where b.BookingStatus<>5 and b.roomid=r.roomid ";
@@ -184,12 +202,12 @@ namespace Stayzey.Controllers
             }
             else
             {
+                //Student
                 sql += " and b.UserId = " + userid;
             }
 
             sql += " order by BookingTime desc ";
-
-
+            
             List<Hashtable> bookings = db.Query(sql);
             ViewBag.Bookings = bookings;
             ViewBag.BookingStatuses = BookingStatuses;
@@ -197,19 +215,11 @@ namespace Stayzey.Controllers
 
             return View();
         }
-
-        public ActionResult WishLists()
-        {
-            int userid = GetLoginUserId();
-            if (userid == 0)
-            {
-                return Redirect("/#Login");
-            }
-            return View();
-        }
-
+        
+        //Login
         public ActionResult LogIn(string email,string password)
         {
+            //Check parameters
             Hashtable data = new Hashtable();
             bool checkPassed = true;
             data["success"] = 1;
@@ -228,10 +238,13 @@ namespace Stayzey.Controllers
 
             if (checkPassed)
             {
+                //Query from database
                 List<Hashtable> result = db.Query("select * from Users where email=@email and Blocked<>1",
                     new SqlParameter[] { new SqlParameter("@email",email) });
+
                 if(result.Count==1)
                 {
+                    //User found, check password
                     string passwordInDB = (string)(result[0]["Password"]);
                     if(password==passwordInDB)
                     {
@@ -245,6 +258,7 @@ namespace Stayzey.Controllers
                 }
                 else
                 {
+                    //No data for user
                     checkPassed = false;
                     data["error_email"] = "Email not found";
                     data["error_password"] = "Please enter the correct password";
@@ -257,6 +271,7 @@ namespace Stayzey.Controllers
             return JsonAllowGet(data);
         }
 
+        //User registration
         public ActionResult SignUp(
             string firstname,
             string lastname,
@@ -265,6 +280,7 @@ namespace Stayzey.Controllers
             string confirmpassword,
             string usertype)
         {
+            //Check parameters
             Hashtable data = new Hashtable();
             data["success"] = 1;
             bool checkPassed = true;
@@ -314,6 +330,7 @@ namespace Stayzey.Controllers
                 data["error_confirmpassword"] = "Please enter the same password";
             }
 
+            //Check if email exists
             List<Hashtable> result = db.Query("select * from Users where email=@email",new SqlParameter[] { new SqlParameter("@email",email)});
             if(result.Count>0)
             {
@@ -328,7 +345,7 @@ namespace Stayzey.Controllers
                 item["Surname"] = lastname;
                 item["Email"] = email;
                 item["Password"] = password;
-                item["Avatar"] = "/images/default_profile_image.png";
+                item["Avatar"] = "/images/default_profile_image.png";  //Default image for newly created user
                 item["UserType"] = int.Parse(usertype);
                 item["Blocked"] = 0;
                 int count = db.Insert("Users", item);
@@ -341,41 +358,51 @@ namespace Stayzey.Controllers
             return JsonAllowGet(data);
         }
 
+        //Logout
         public ActionResult LogOut()
         {
             Hashtable data = new Hashtable();
             data["success"] = 1;
+            //Remove session while logout
             Session.Remove("login_user");
             return JsonAllowGet(data);
         }
 
+        //Display room creation page
         public ActionResult NewRoom()
         {
+            //Check login
             int userid = GetLoginUserId();
             if (userid == 0)
             {
                 return Redirect("/#Login");
             }
+
+            //Show room creation page
             return View("RoomEditor");
         }
 
+        //Display room editing page
         public ActionResult EditRoom(string id)
         {
+            //Check login
             int userid = GetLoginUserId();
             if (userid == 0)
             {
                 return Redirect("/#Login");
             }
 
+            
             int nId = 0;
-
-            if(int.TryParse(id,out nId))
+            if(int.TryParse(id,out nId)) //convert id to integer
             {
+                //Query room data from database
                 List<Hashtable> data = db.Query("select * from Rooms where RoomId=" + nId + " and UserId=" + userid);
                 if(data.Count()>0)
                 {
                     ViewBag.Room = data[0];
 
+                    //Query room images attached to this room
                     List<Hashtable> dataImages = db.Query("select * from RoomImages where RoomId=" + nId);
                     ViewBag.RoomImages = dataImages;
 
@@ -383,14 +410,17 @@ namespace Stayzey.Controllers
                 }
             }
 
+            //Return 404 while room not found
             return HttpNotFound();
         }
 
+        //Delete a rooms
         public ActionResult DeleteRoom(string id)
         {
             Hashtable result = new Hashtable();
             try
             {
+                //check login
                 int userid = GetLoginUserId();
                 if (userid == 0)
                 {
@@ -398,16 +428,19 @@ namespace Stayzey.Controllers
                     throw new Exception("You have to login first");
                 }
 
+                //check existing bookings
                 int nId = int.Parse(id);
                 string sqlCheck = "select count(1) bookingCount from Bookings where RoomId=" + nId;
                 List<Hashtable> data = db.Query(sqlCheck);
                 int bookingCount = (int)(data[0]["bookingCount"]);
                 if(bookingCount>0)
                 {
+                    //room with existing booking(s) cannot be deleted
                     throw new Exception("Can not delete this room which has been booked");
                 }
 
-                string sqlDelete = "delete from Rooms where RoomId=" + nId + " and UserId=" + userid;
+                //Perform room deleting
+                string sqlDelete = "delete from Rooms where RoomId=" + nId + " and UserId=" + userid; //Make sure user only delete the room created by itself
                 db.Query(sqlDelete);
                 result["success"] = 1;
             }
@@ -419,11 +452,13 @@ namespace Stayzey.Controllers
             return JsonAllowGet(result);
         }
 
+        //change room status
         public ActionResult ChangeRoomStatus(string id,string flag)
         {
             Hashtable result = new Hashtable();
             try
             {
+                //Check login
                 int userid = GetLoginUserId();
                 if (userid == 0)
                 {
@@ -431,6 +466,7 @@ namespace Stayzey.Controllers
                     throw new Exception("You have to login first");
                 }
 
+                //Update room status
                 int nFlag = int.Parse(flag);
                 int nId = int.Parse(id);
 
@@ -449,6 +485,7 @@ namespace Stayzey.Controllers
             return JsonAllowGet(result);
         }
 
+        //Display upload image page in the iframe
         [HttpGet]
         public ActionResult UploadImage(string callback)
         {
@@ -456,6 +493,7 @@ namespace Stayzey.Controllers
             return View();
         }
 
+        //Perform image uploading and display the upload page
         [HttpPost]
         public ActionResult UploadImage(string callback,HttpPostedFileBase file)
         {
@@ -465,7 +503,8 @@ namespace Stayzey.Controllers
                 string oriFileName = file.FileName.ToLower();
                 string fileExtension = Path.GetExtension(oriFileName);
 
-                if(AcceptFileType.Contains(fileExtension))
+                //Only allow some image type files. Make sure not upload malicious files
+                if (AcceptFileType.Contains(fileExtension))
                 {
                     string imageFolder = Server.MapPath("~/UploadImages");
                     if(!Directory.Exists(imageFolder))
@@ -497,7 +536,7 @@ namespace Stayzey.Controllers
             return View();
         }
 
-
+        //Save room, support create and update room according to room id field
         public ActionResult SaveRoom(
             string RoomId,
             string Title,
@@ -509,12 +548,14 @@ namespace Stayzey.Controllers
             string[] Amenities,
             string[] RoomImages)
         {
+            //Initialize some variables
             Hashtable data = new Hashtable();
             data["success"] = 1;
             decimal numberPrice = 0;
             double numberLatitude = 0;
             double numberLongitude = 0;
 
+            //Login check
             int loginUserId = GetLoginUserId();
             if(loginUserId==0)
             {
@@ -589,6 +630,7 @@ namespace Stayzey.Controllers
             int nRoomId = 0;
             int.TryParse(RoomId, out nRoomId);
             
+            //Prepare room object
             Hashtable room = new Hashtable();
             if (nRoomId > 0) room["RoomId"] = nRoomId;
             room["RoomTitle"] = Title;
@@ -601,6 +643,7 @@ namespace Stayzey.Controllers
             room["UserId"] = loginUserId;
             room["CreateTime"] = DateTime.Now;
 
+            //Convert amentities array to string for storing in database
             string strAmenities = "";
             if (Amenities != null && Amenities.Count() > 0)
             {
@@ -612,14 +655,19 @@ namespace Stayzey.Controllers
 
             if (nRoomId > 0)
             {
+                //Update room when roomid is not 0
                 db.Update("Rooms", room, "RoomId");
             }
             else
             {
+                //Create a new room when roomid is 0
                 db.Insert("Rooms", room);
+                //Return id just created
                 nRoomId = db.GetLastInsertId();
             }
 
+            //Update images that related to this room, remove all the images records first,
+            //then insert the new ones.
             db.Update("delete from RoomImages where RoomId=" + nRoomId);
 
             foreach(string image in RoomImages)
@@ -633,12 +681,14 @@ namespace Stayzey.Controllers
             return JsonAllowGet(data);
         }
 
+        //Request to book a room
         public ActionResult RequestToBook(string roomid,string dates)
         {
             Hashtable data = new Hashtable();
 
             try
             {
+                //Login check
                 int userid = GetLoginUserId();
                 if (userid == 0)
                 {
@@ -647,7 +697,8 @@ namespace Stayzey.Controllers
                     data["error_info"] = "Please login first";
                     return JsonAllowGet(data);
                 }
-                //check dates Available
+
+                //Check dates
                 string[] dataArray = dates.Split("-".ToCharArray());
                 DateTime startDate = new DateTime();
                 DateTime endDate = new DateTime();
@@ -669,6 +720,7 @@ namespace Stayzey.Controllers
                     throw new Exception("Please select the correct check in and check out dates.");
                 }
 
+                //Check room existance
                 List<Hashtable> roomList = db.Query("select * from Rooms where RoomId=@RoomId",
                     new SqlParameter[] { new SqlParameter("RoomId",roomid)});
 
@@ -691,7 +743,7 @@ namespace Stayzey.Controllers
                 item["Deposit"] = roomPrice * 2;
                 item["Total"] = roomPrice * 4;
                 item["BookingStatus"] = 0;
-
+                //Save booking
                 db.Insert("Bookings",item);
 
                 data["success"] = 1;
@@ -707,13 +759,14 @@ namespace Stayzey.Controllers
             return JsonAllowGet(data);
         }
 
-
+        //Delete booking
         public ActionResult DeleteBooking(string id)
         {
             Hashtable data = new Hashtable();
 
             try
             {
+                //Login check
                 int userid = GetLoginUserId();
                 if (userid == 0)
                 {
@@ -723,16 +776,21 @@ namespace Stayzey.Controllers
                     return JsonAllowGet(data);
                 }
 
+                //Query the booking
                 int nId = int.Parse(id);
 
                 string sql = "select * from Bookings where RoomId=" + nId;
                 List<Hashtable> bookings = db.Query(sql);
                 if (bookings.Count() == 0)
                 {
-                    throw new Exception("Room not found");
+                    throw new Exception("Booking not found");
                 }
+
+                //Change booking status to 5 for deleting a room
                 Hashtable booking = bookings[0];
                 int bookingStatus = (int)booking["BookingStatus"];
+
+                //Check the bookings if it is deletable
                 if (bookingStatus == 5 || bookingStatus == 3 || bookingStatus==1)
                 {
                     throw new Exception("Current status does not allow cancellation");
@@ -752,12 +810,14 @@ namespace Stayzey.Controllers
             return JsonAllowGet(data);
         }
 
+        //Cancel booking
         public ActionResult CancelBooking(string id)
         {
             Hashtable data = new Hashtable();
 
             try
             {
+                //Login check
                 int userid = GetLoginUserId();
                 if (userid == 0)
                 {
@@ -767,6 +827,7 @@ namespace Stayzey.Controllers
                     return JsonAllowGet(data);
                 }
 
+                //Query the booking
                 int nId = int.Parse(id);
 
                 string sql = "select * from Bookings where BookingId=" + nId;
@@ -775,8 +836,10 @@ namespace Stayzey.Controllers
                 {
                     throw new Exception("Room not found");
                 }
+                
                 Hashtable booking = bookings[0];
                 int bookingStatus = (int)(booking["BookingStatus"]);
+                //Check the booking if it is cancellable
                 if(bookingStatus==5 || bookingStatus==3 || bookingStatus == 1)
                 {
                     throw new Exception("Current status does not allow cancellation");
@@ -796,12 +859,14 @@ namespace Stayzey.Controllers
             return JsonAllowGet(data);
         }
 
+        //Accept booking by landlord
         public ActionResult AcceptBooking(string id)
         {
             Hashtable data = new Hashtable();
 
             try
             {
+                //Login check
                 int userid = GetLoginUserId();
                 if (userid == 0)
                 {
@@ -810,6 +875,8 @@ namespace Stayzey.Controllers
                     data["error_info"] = "Please login first";
                     return JsonAllowGet(data);
                 }
+
+                //Update booking status
                 int nId = int.Parse(id);
                 db.Update("Update Bookings set BookingStatus=1 where BookingId=" + nId);
                 data["success"] = 1;
@@ -822,12 +889,14 @@ namespace Stayzey.Controllers
             return JsonAllowGet(data);
         }
 
+        //Reject booking by landlord
         public ActionResult RejectBooking(string id)
         {
             Hashtable data = new Hashtable();
 
             try
             {
+                //Login check
                 int userid = GetLoginUserId();
                 if (userid == 0)
                 {
@@ -836,6 +905,8 @@ namespace Stayzey.Controllers
                     data["error_info"] = "Please login first";
                     return JsonAllowGet(data);
                 }
+
+                //Update the booking status
                 int nId = int.Parse(id);
                 db.Update("Update Bookings set BookingStatus=2 where BookingId=" + nId);
                 data["success"] = 1;
@@ -853,12 +924,14 @@ namespace Stayzey.Controllers
             return true;
         }
 
+        //Pay booking through PayPal
         public ActionResult PayBooking(string id)
         {
             Hashtable data = new Hashtable();
 
             try
             {
+                //Login check
                 int userid = GetLoginUserId();
                 if (userid == 0)
                 {
@@ -868,6 +941,7 @@ namespace Stayzey.Controllers
                     return JsonAllowGet(data);
                 }
 
+                //Query the booking
                 int nId = int.Parse(id);
                 List<Hashtable> result = db.Query("select * from Bookings where BookingId=" + nId);
                 if (result.Count == 0)
@@ -877,6 +951,7 @@ namespace Stayzey.Controllers
 
                 decimal totalFee = (decimal)(result[0]["Total"]);
                 
+                //Prepare parameters for connecting to PayPal
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                 ServicePointManager.ServerCertificateValidationCallback += new System.Net.Security.RemoteCertificateValidationCallback(ValidateServerCertificate);
 
@@ -886,9 +961,9 @@ namespace Stayzey.Controllers
                 
                 string postData = "";
 
-                postData += "USER=" + HttpUtility.UrlEncode("################");
-                postData += "&PWD=" + HttpUtility.UrlEncode("#####################");
-                postData += "&SIGNATURE=" + HttpUtility.UrlEncode("####################################");
+                postData += "USER=" + HttpUtility.UrlEncode("sunruibox_api1.gmail.com");
+                postData += "&PWD=" + HttpUtility.UrlEncode("BLWSGT6PV7R8RN3G");
+                postData += "&SIGNATURE=" + HttpUtility.UrlEncode("AFcWxV21C7fd0v3bYYYRCpSSRl31AXk-xZHVWQJHmkqSIWYm-nHsHBI0");
                 postData += "&METHOD=" + HttpUtility.UrlEncode("SetExpressCheckout");
                 postData += "&VERSION=" + HttpUtility.UrlEncode("93");
                 postData += "&PAYMENTREQUEST_0_PAYMENTACTION=" + HttpUtility.UrlEncode("SALE");
@@ -897,6 +972,7 @@ namespace Stayzey.Controllers
                 postData += "&RETURNURL=" + HttpUtility.UrlEncode("http://stayzey.azurewebsites.net/User/PaySuccess?id="+nId);
                 postData += "&CANCELURL=" + HttpUtility.UrlEncode("http://stayzey.azurewebsites.net/User/PayFail?id=");
 
+                //Send request to PayPal server
                 byte[] byteArray = Encoding.UTF8.GetBytes(postData);
                 request.ContentType = "application/x-www-form-urlencoded";
                 request.ContentLength = byteArray.Length;
@@ -928,10 +1004,7 @@ namespace Stayzey.Controllers
 
                 data["success"] = 1;
                 data["url"] = "https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token=" + tokenValue;
-
-                //int nId = int.Parse(id);
-                //db.Update("Update Bookings set BookingStatus=3 where BookingId=" + nId);
-                //data["success"] = 1;
+                
             }
             catch (Exception ex)
             {
@@ -941,6 +1014,7 @@ namespace Stayzey.Controllers
             return JsonAllowGet(data);
         }
 
+        //Save reviews
         public ActionResult SaveReview(
             string BookingId,
             string ReviewMark,
@@ -950,6 +1024,7 @@ namespace Stayzey.Controllers
 
             try
             {
+                //Login check
                 int userid = GetLoginUserId();
                 if (userid == 0)
                 {
@@ -959,14 +1034,19 @@ namespace Stayzey.Controllers
                     return JsonAllowGet(data);
                 }
 
+                
                 int nBookingId = int.Parse(BookingId);
                 int nReviewMark = int.Parse(ReviewMark);
+
+                //Query the booking
                 string sql = "select b.BookingId BookingId,r.UserId HostId,b.UserId UserId from Rooms r,Bookings b where r.RoomId=b.RoomId and b.BookingId=" + BookingId;
 
                 List<Hashtable> bookings = db.Query(sql);
                 if (bookings.Count() > 0)
                 {
                     Hashtable booking = bookings[0];
+
+                    //Prepare review object
                     Hashtable review = new Hashtable();
                     review["BookingId"] = booking["BookingId"];
                     review["ReviewMark"] = nReviewMark;
@@ -974,9 +1054,11 @@ namespace Stayzey.Controllers
                     review["HostId"] = booking["HostId"];
                     review["UserId"] = booking["UserId"];
                     review["ReviewTime"] = DateTime.Now;
-
+                    
+                    //Save the review to database
                     db.Insert("Reviews",review);
 
+                    //Update booking status
                     sql = "update Bookings set BookingStatus=6 where BookingId = " + nBookingId;
                     db.Update(sql);
 
@@ -1000,8 +1082,7 @@ namespace Stayzey.Controllers
         {
 
             //TODO check the payment 
-
-
+            
             int nId = int.Parse(id);
             db.Update("Update Bookings set BookingStatus=3 where BookingId=" + nId);
             return Redirect("/User/Bookings");

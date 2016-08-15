@@ -1,4 +1,12 @@
-﻿using Stayzey.Models;
+﻿/*
+ * Abstract Stayzey Controller
+ * Author: Ricky Sun
+ * Date: 23/06/2016
+ * 
+ * Provide common functions of all the controllers.s
+ */
+
+using Stayzey.Models;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -11,6 +19,7 @@ namespace Stayzey.Controllers
 {
     public abstract class StayzeyAbstractController : Controller
     {
+        //Return db instance
         protected StayzeyDatabase db
         {
             get
@@ -19,11 +28,13 @@ namespace Stayzey.Controllers
             }
         }
 
+        //Return json encoded result by the data, meanwhile allow Get request
         protected JsonResult JsonAllowGet(object data)
         {
             return Json(data, JsonRequestBehavior.AllowGet);
         }
 
+        //Check if the string is empty
         protected bool IsEmpty(string s)
         {
             if (s == null) return true;
@@ -31,6 +42,7 @@ namespace Stayzey.Controllers
             return false;
         }
 
+        //Check if the string is a valid email
         protected bool IsValidEmail(string email)
         {
             string validEmailPattern = @"^(?!\.)(""([^""\r\\]|\\[""\r\\])*""|"
@@ -42,6 +54,7 @@ namespace Stayzey.Controllers
             return emailRegex.IsMatch(email);
         }
 
+        //Return the logined user id
         protected int GetLoginUserId()
         {
             if(Session["login_user"] !=null)
